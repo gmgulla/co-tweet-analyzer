@@ -27,11 +27,10 @@ class TweetsService private (_dao: TweetsDao) {
     val tweets = dao.data
     val dirtyMostUsedLanguages = tweets.filter(tweets("tweetLang").isNotNull)
       .groupBy("tweetLang")
-      .agg(
-        tweets("tweetLang"),
-        functions.count("tweetLang").alias("count")
-      )
-    dirtyMostUsedLanguages.filter(functions.length(dirtyMostUsedLanguages("tweetLang")) <= 3 )
+      .agg(functions.count("tweetLang").alias("count"))
+    dirtyMostUsedLanguages.where(
+      dirtyMostUsedLanguages("tweetLang").rlike("[a-z]{2}")
+    )
   }
 
   /*
