@@ -15,22 +15,7 @@ class CountriesService private (_dao: CountriesDao) {
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  def showAll(): Unit = {
-    val numRows = dao.data.count().toInt
-    show(numRows)
-  }
-
-  def show(numRows: Int): Unit = {
-    val data = dao.data
-    val truncate = false
-    data.show(numRows, false)
-  }
-
-  def printSchema(): Unit = {
-    dao.data.printSchema()
-  }
-
-  override def toString = s"${super.toString}\n${dao.toString}"
+  // TODO: Implement queries
 
 }
 

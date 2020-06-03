@@ -1,7 +1,8 @@
 package it.dimes.training.co_tweet_analyzer.services
 
 import it.dimes.training.co_tweet_analyzer.dao.HashtagsDao
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession, functions}
+import org.apache.spark.storage.StorageLevel
 
 class HashtagsService private (_dao: HashtagsDao) {
 
@@ -15,19 +16,21 @@ class HashtagsService private (_dao: HashtagsDao) {
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  def printSchema(): Unit = {
-    dao.data.printSchema()
-  }
+  /*
+   * ============================================================
+   * QUERY
+   * Calculate Hashtags
+   * ============================================================
+   */
 
-  def show(): Unit = {
-    dao.data.show()
+  def calculateHashtags(): DataFrame = {
+    val hashtags = dao.readData()
+    val hashtagColumnName = "hashtag"
+    hashtags.filter(hashtags(hashtagColumnName).isNotNull)
+      .groupBy(hashtagColumnName)
+      .agg(functions.count(hashtagColumnName))
+      .persist(StorageLevel.MEMORY_AND_DISK)
   }
-
-  def show(numRows: Int): Unit = {
-    dao.data.show(numRows, false)
-  }
-
-  override def toString = s"${super.toString}\n${dao.toString}"
 
 }
 

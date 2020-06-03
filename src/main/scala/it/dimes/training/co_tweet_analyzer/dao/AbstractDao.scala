@@ -11,7 +11,7 @@ abstract class AbstractDao protected(_sqlSession: SparkSession) {
 
   protected val sqlSession = _sqlSession
   protected val RES_PATH = "src/main/resources/data/"
-  val data: Dataset[Row]
+
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
@@ -19,7 +19,7 @@ abstract class AbstractDao protected(_sqlSession: SparkSession) {
 
   protected def buildSchema(): StructType
   protected def readData(): Dataset[Row]
-  protected def clean(dataset: Dataset[Row]): Dataset[Row]
+
 
 
 }

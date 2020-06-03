@@ -10,7 +10,6 @@ class HashtagsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSe
 // -----------------------------------------------------------------------||
 
   private val HASHTAGS_PATH = "other/Hashtags.CSV"
-  override val data: Dataset[Row] = readData()
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
@@ -22,16 +21,14 @@ class HashtagsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSe
       .add("hashtag", StringType, true)
   }
 
-  override protected def readData(): Dataset[Row] = {
+  override def readData(): Dataset[Row] = {
     val schema = buildSchema()
-    val dataset = sqlSession.read
+    sqlSession.read
       .option("header", "true")
       .schema(schema)
       .csv(s"$RES_PATH$HASHTAGS_PATH")
-    clean(dataset)
-  }
 
-  override protected def clean(dataset: Dataset[Row]): Dataset[Row] = dataset
+  }
 
 }
 

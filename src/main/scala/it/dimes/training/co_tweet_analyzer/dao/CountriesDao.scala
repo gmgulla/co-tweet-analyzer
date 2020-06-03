@@ -10,14 +10,12 @@ class CountriesDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlS
 // -----------------------------------------------------------------------||
 
   private val COUNTRIES_PATH = "other/Countries.CSV"
-  override val data: Dataset[Row] = readData()
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  override protected def readData(): Dataset[Row] = {
-    //val encoder = Encoders.javaSerialization[Country]
+  override def readData(): Dataset[Row] = {
     val schema = buildSchema()
     val dataset = sqlSession.read
       .option("header", "true")
@@ -33,7 +31,7 @@ class CountriesDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlS
       .add("code", StringType, true)
   }
 
-  override protected def clean(dataset: Dataset[Row]): Dataset[Row] = {
+  protected def clean(dataset: Dataset[Row]): Dataset[Row] = {
     dataset.filter(dataset("code").isNotNull && dataset("name").isNotNull )
   }
 

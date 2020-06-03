@@ -9,21 +9,47 @@ class TweetsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSess
 // FIELDS ----------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  private val TWEETS_PATH = "coronavirus-covid19-tweets/2020-03-12 Coronavirus Tweets.CSV"
-  override val data: Dataset[Row] = readData()
+  // For convenience, only one file is read during development
+  private val TWEETS_PATH = "coronavirus-covid19-tweets/2020-03-13 Coronavirus Tweets.CSV"
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  override protected def readData(): Dataset[Row] = {
+  override def readData(): Dataset[Row] = {
     val schema = buildSchema()
-    val dataset = sqlSession.read
-      .option("head", "true")
+    sqlSession.read.format("csv")
+      .option("inferSchema", "true")
+      .option("header", "true")
       .schema(schema)
-      .csv(s"$RES_PATH$TWEETS_PATH")
-    clean(dataset)
+      .load(s"$RES_PATH$TWEETS_PATH")
   }
+
+    /*override protected def buildSchema(): StructType = {
+      new StructType()
+        .add("status_id", LongType, true)
+        .add("user_id", LongType, true)
+        .add("created_at", DateType, true)
+        .add("screen_name", StringType, true)
+        .add("text", StringType, true)
+        .add("source", StringType, true)
+        .add("reply_to_status_id", LongType, true)
+        .add("reply_to_user_id", LongType, true)
+        .add("reply_to_screen_name", StringType, true)
+        .add("is_quote", BooleanType, true)
+        .add("is_retweet", BooleanType, true)
+        .add("favourites_count", IntegerType, true)
+        .add("retweet_count", IntegerType, true)
+        .add("country_code", StringType, true)
+        .add("place_full_name", StringType, true)
+        .add("place_type", StringType, true)
+        .add("followers_count", IntegerType, true)
+        .add("friends_count", IntegerType, true)
+        .add("account_lang", StringType, true)
+        .add("account_created_at", DateType, true)
+        .add("verified", BooleanType, true)
+        .add("lang", StringType, true)
+    }*/
 
   override protected def buildSchema(): StructType = {
     new StructType()
@@ -49,12 +75,9 @@ class TweetsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSess
       .add("accountCreationDate", DateType, true)
       .add("isVerified", BooleanType, true)
       .add("tweetLang", StringType, true)
-
   }
 
-  override protected def clean(dataset: Dataset[Row]): Dataset[Row] = {
-    dataset.filter(dataset("tweetId").isNotNull)
-  }
+
 }
 
 // -----------------------------------------------------------------------||

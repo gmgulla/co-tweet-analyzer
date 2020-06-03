@@ -1,69 +1,65 @@
 package it.dimes.training.co_tweet_analyzer.services
 
 import it.dimes.training.co_tweet_analyzer.dao.TweetsDao
-import org.apache.spark.sql.{DataFrame, SparkSession, functions}
+import org.apache.spark.sql.{DataFrame, Encoders, SparkSession, functions}
+import scala.collection.Map
 
 class TweetsService private (_dao: TweetsDao) {
 
-// -----------------------------------------------------------------------||
-// FIELDS ----------------------------------------------------------------||
-// -----------------------------------------------------------------------||
+  // -----------------------------------------------------------------------||
+  // FIELDS ----------------------------------------------------------------||
+  // -----------------------------------------------------------------------||
 
   private val dao = _dao
 
-// -----------------------------------------------------------------------||
-// METHODS ---------------------------------------------------------------||
-// -----------------------------------------------------------------------||
+  // -----------------------------------------------------------------------||
+  // METHODS ---------------------------------------------------------------||
+  // -----------------------------------------------------------------------||
 
 
   /*
    * ============================================================
    * QUERY
-   * Get most used languages
+   * Calculate languages
    * ============================================================
    */
 
-  def getMostUsedLangueges(): DataFrame = {
-    val tweets = dao.data
+  def calculateLangueges(): DataFrame = {
+    val tweets = dao.readData()
     val dirtyMostUsedLanguages = tweets.filter(tweets("tweetLang").isNotNull)
       .groupBy("tweetLang")
       .agg(functions.count("tweetLang").alias("count"))
     dirtyMostUsedLanguages.where(
-      dirtyMostUsedLanguages("tweetLang").rlike("[a-z]{2}")
+      dirtyMostUsedLanguages("tweetLang").rlike("[a-z][a-z]")
     )
   }
 
   /*
    * ============================================================
-   * Print methods
+   * QUERY
+   * Calculate sources (devices)
    * ============================================================
    */
 
-  def showOriginal(): Unit = {
-    val numRows = 20
-    showOriginal(numRows)
+
+  def calculateSources(): Map[String, Int] = {
+    val sourceColumName = "source"
+    val tweets = dao.readData()
+    tweets.select(sourceColumName)
+      .map(row => row.toString())(Encoders.STRING)
+      .rdd
+      .map(source => (source, 1))
+      .reduceByKey(_ + _)
+      .collectAsMap()
   }
 
-  def showOriginal(numRows: Int): Unit = {
-    show(dao.data, numRows)
+  // Implemented only for testing
+  def getSources(): DataFrame = {
+    val sourceColumName = "source"
+    val tweets = dao.readData()
+    tweets.select(sourceColumName)
   }
 
-  def showAll(dataFrame: DataFrame): Unit = {
-    val numRows = dataFrame.count().toInt
-    show(dataFrame, numRows)
-  }
-
-  def show(dataFrame: DataFrame, numRows: Int): Unit = {
-    val truncate = false
-    dataFrame.show(numRows, truncate)
-  }
-
-  def printSchema(): Unit = {
-    dao.data.printSchema()
-  }
-
-
-  override def toString = s"${super.toString}\n${dao.toString}"
 }
 
 // -----------------------------------------------------------------------||
