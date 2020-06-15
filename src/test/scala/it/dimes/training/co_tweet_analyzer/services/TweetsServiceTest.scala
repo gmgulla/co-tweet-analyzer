@@ -23,7 +23,19 @@ class TweetsServiceTest {
   }
 
   @Test
-  def printSources(): Unit = {
-    TweetsService(sqlSession).getSources().collect().foreach(println)
+  def isCalculateLanguagesReturnedValueCorrect(): Unit = {
+    val tweetsService = TweetsService(sqlSession)
+    val returnedValue = tweetsService.calculateLangueges()
+    returnedValue.foreach(println)
+    assertNotNull(returnedValue)
   }
+
+  @Test
+  def isCalculateUserNamesReturnedValueCorrect(): Unit = {
+    val tweetsService = TweetsService(sqlSession)
+    val returnedValue = tweetsService.calculateUserNames()
+    returnedValue.foreach(println)
+    assertNotNull(returnedValue)
+  }
+
 }

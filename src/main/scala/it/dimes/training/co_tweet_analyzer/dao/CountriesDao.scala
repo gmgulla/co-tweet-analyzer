@@ -9,32 +9,23 @@ class CountriesDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlS
 // FIELDS ----------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  private val COUNTRIES_PATH = "other/Countries.CSV"
+  private val COUNTRIES_PATH = "countries/Countries.pq"
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
   override def readData(): Dataset[Row] = {
-    val schema = buildSchema()
-    val dataset = sqlSession.read
-      .option("header", "true")
-      .schema(schema)
-      .csv(s"$RES_PATH$COUNTRIES_PATH")
-    clean(dataset)
+    val data = sqlSession.read.parquet(s"/Users/gmg/Documents/data/countries")
+    renameColumn(data)
   }
 
 
-  override protected def buildSchema(): StructType = {
-    new StructType()
-      .add("name", StringType, true)
-      .add("code", StringType, true)
+  private def renameColumn(dataToRenameColumn: Dataset[Row]): Dataset[Row] = {
+    dataToRenameColumn
+      .withColumnRenamed("country", "name")
+      .withColumnRenamed("country_code", "code")
   }
-
-  protected def clean(dataset: Dataset[Row]): Dataset[Row] = {
-    dataset.filter(dataset("code").isNotNull && dataset("name").isNotNull )
-  }
-
 
 }
 

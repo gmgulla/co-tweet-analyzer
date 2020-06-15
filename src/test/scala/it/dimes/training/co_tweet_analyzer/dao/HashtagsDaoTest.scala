@@ -4,22 +4,20 @@ import it.dimes.training.co_tweet_analyzer.Launcher
 import org.apache.spark.sql.SparkSession
 import org.junit.{Assert, Before, Test}
 
-class TweetsDaoTest {
+class HashtagsDaoTest {
 
   var sqlSession: SparkSession = _
 
   @Before
-  def setUp: Unit = {
-    sqlSession = Launcher.init("Tweets Dao Test", "local[*]")
+  def setUp(): Unit = {
+      sqlSession = Launcher.init("Hashtags Dao Test", "local[*]")
   }
 
   @Test
-  def isTweetsDatasetRead(): Unit = {
-    val data = TweetsDao(sqlSession).readData()
+  def isHashtagsDatasetRead(): Unit = {
+    val data = HashtagsDao(sqlSession).readData()
     data.printSchema()
-    //df.collect().take(200).foreach(println)
-    data.show(200, true)
+    data.show(200)
     Assert.assertNotNull(data)
   }
-
 }

@@ -9,25 +9,21 @@ class HashtagsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSe
 // FIELDS ----------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  private val HASHTAGS_PATH = "other/Hashtags.CSV"
+  private val HASHTAGS_PATH = "hashtags/Hashtags.pq"
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||
 // -----------------------------------------------------------------------||
 
-  override protected def buildSchema(): StructType = {
-    new StructType()
-      .add("tweetId", StringType, true)
-      .add("hashtag", StringType, true)
+  override def readData(): Dataset[Row] = {
+    val data = sqlSession.read.parquet(s"/Users/gmg/Documents/data/hashtags")
+    renameColumn(data)
   }
 
-  override def readData(): Dataset[Row] = {
-    val schema = buildSchema()
-    sqlSession.read
-      .option("header", "true")
-      .schema(schema)
-      .csv(s"$RES_PATH$HASHTAGS_PATH")
-
+  private def renameColumn(dataToRenameColumn: Dataset[Row]): Dataset[Row] = {
+    dataToRenameColumn
+      .withColumnRenamed("status_id", "tweet")
+      // hashtag - column name not modified
   }
 
 }

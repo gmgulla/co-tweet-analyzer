@@ -2,7 +2,7 @@ package it.dimes.training.co_tweet_analyzer.services
 
 import it.dimes.training.co_tweet_analyzer.dao.TweetsDao
 import org.apache.spark.sql.{DataFrame, Encoders, SparkSession, functions}
-import scala.collection.Map
+
 
 class TweetsService private (_dao: TweetsDao) {
 
@@ -24,14 +24,18 @@ class TweetsService private (_dao: TweetsDao) {
    * ============================================================
    */
 
-  def calculateLangueges(): DataFrame = {
+  def calculateLangueges(): Map[String, Long] = {
+    val langColumnName =  "lang" //"tweetLang"
+    val countColumnName = "count"
     val tweets = dao.readData()
-    val dirtyMostUsedLanguages = tweets.filter(tweets("tweetLang").isNotNull)
-      .groupBy("tweetLang")
-      .agg(functions.count("tweetLang").alias("count"))
-    dirtyMostUsedLanguages.where(
-      dirtyMostUsedLanguages("tweetLang").rlike("[a-z][a-z]")
-    )
+    tweets.select(langColumnName)
+      .groupBy(langColumnName)
+      .count().alias(countColumnName)
+      .map(row =>
+        (row.getAs[String](langColumnName), row.getAs[Long](countColumnName))
+      ) (Encoders.tuple[String, Long](Encoders.STRING, Encoders.scalaLong))
+      .collect()
+      .toMap
   }
 
   /*
@@ -42,23 +46,62 @@ class TweetsService private (_dao: TweetsDao) {
    */
 
 
-  def calculateSources(): Map[String, Int] = {
-    val sourceColumName = "source"
+  def calculateSources(): Map[String, Long] = {
+    val sourceColunmName = "source"
+    val countColumnName = "count"
     val tweets = dao.readData()
-    tweets.select(sourceColumName)
-      .map(row => row.toString())(Encoders.STRING)
-      .rdd
-      .map(source => (source, 1))
-      .reduceByKey(_ + _)
-      .collectAsMap()
+    tweets.select(sourceColunmName)
+      .groupBy(sourceColunmName)
+      .count().alias(countColumnName)
+      .map(row =>
+        (row.getAs[String](sourceColunmName), row.getAs[Long](countColumnName))
+      ) (Encoders.tuple[String, Long](Encoders.STRING, Encoders.scalaLong))
+      .collect()
+      .toMap
   }
 
+  /*
+   * ============================================================
+   * QUERY
+   * Calculate user names
+   * ============================================================
+   */
+
+  def calculateUserNames(): Map[String, Long] = {
+    val userColumnName = "screen_name"  //"userName"
+    val countColumnName = "count"
+    val tweets = dao.readData()
+    tweets.select(userColumnName)
+      .groupBy(userColumnName)
+      .count().alias(countColumnName)
+      .map(row =>
+        (row.getAs[String](userColumnName), row.getAs[Long](countColumnName))
+      ) (Encoders.tuple[String, Long](Encoders.STRING, Encoders.scalaLong))
+      .collect()
+      .toMap
+  }
+
+  /*
+  def calculateUserNamesRDD(): scala.collection.Map[String, Int] = {
+    val userColumnName = "screen_name"  //"userName"
+    val countColumnName = "count"
+    val tweets = dao.readData()
+    tweets.select(userColumnName)
+      .rdd
+      .map(row => (row.toString(), 1))
+      .reduceByKey(_+_)
+      .collectAsMap()
+  }
+   */
+
+  /*
   // Implemented only for testing
-  def getSources(): DataFrame = {
-    val sourceColumName = "source"
+  def getLanguages(): DataFrame = {
+    val sourceColumName = "tweetLang"
     val tweets = dao.readData()
     tweets.select(sourceColumName)
   }
+   */
 
 }
 
