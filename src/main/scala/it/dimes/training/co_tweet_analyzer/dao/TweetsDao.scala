@@ -10,7 +10,7 @@ class TweetsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSess
 // -----------------------------------------------------------------------||
 
   // For convenience, only one file is read during development
-  private val TWEETS_PATH = "/tweets/2020-03-13 Coronavirus Tweets.pq"
+  private val TWEETS_PATH = "tweets/2020-03-13 Coronavirus Tweets.pq"
 
 // -----------------------------------------------------------------------||
 // METHODS ---------------------------------------------------------------||

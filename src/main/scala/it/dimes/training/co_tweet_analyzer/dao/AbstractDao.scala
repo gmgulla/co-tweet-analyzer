@@ -10,7 +10,7 @@ abstract class AbstractDao protected(_sqlSession: SparkSession) {
 // -----------------------------------------------------------------------||
 
   protected val sqlSession = _sqlSession
-  protected val RES_PATH = "/Users/gmg/Documents/data"
+  protected val RES_PATH = "/Users/gmg/Documents/data/"
 
 
 // -----------------------------------------------------------------------||

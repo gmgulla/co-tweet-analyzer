@@ -1,7 +1,7 @@
 package it.dimes.training.co_tweet_analyzer.services
 
 import it.dimes.training.co_tweet_analyzer.dao.HashtagsDao
-import org.apache.spark.sql.{DataFrame, SparkSession, functions}
+import org.apache.spark.sql.{DataFrame, Encoders, SparkSession, functions}
 import org.apache.spark.storage.StorageLevel
 
 class HashtagsService private (_dao: HashtagsDao) {
@@ -23,13 +23,18 @@ class HashtagsService private (_dao: HashtagsDao) {
    * ============================================================
    */
 
-  def calculateHashtags(): DataFrame = {
-    val hashtags = dao.readData()
+  def calculateHashtags(): Map[String, Long] = {
     val hashtagColumnName = "hashtag"
-    hashtags.filter(hashtags(hashtagColumnName).isNotNull)
+    val countColumnName = "count"
+    val hashtags = dao.readData()
+    hashtags.select(hashtagColumnName)
       .groupBy(hashtagColumnName)
-      .agg(functions.count(hashtagColumnName))
-      .persist(StorageLevel.MEMORY_AND_DISK)
+      .count().alias(countColumnName)
+      .map(row =>
+        (row.getAs[String](hashtagColumnName), row.getAs[Long](countColumnName))
+      ) (Encoders.tuple[String, Long](Encoders.STRING, Encoders.scalaLong))
+      .collect()
+      .toMap
   }
 
 }
