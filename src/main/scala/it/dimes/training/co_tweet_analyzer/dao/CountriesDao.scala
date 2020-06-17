@@ -3,7 +3,7 @@ package it.dimes.training.co_tweet_analyzer.dao
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.sql.types.{StringType, StructType}
 
-class CountriesDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSession) {
+class CountriesDao private (_sqlSession: SparkSession, _rootPath: String) extends AbstractDao(_sqlSession, _rootPath) {
 
 // -----------------------------------------------------------------------||
 // FIELDS ----------------------------------------------------------------||
@@ -16,7 +16,7 @@ class CountriesDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlS
 // -----------------------------------------------------------------------||
 
   override def readData(): Dataset[Row] = {
-    val data = sqlSession.read.parquet(s"/Users/gmg/Documents/data/countries")
+    val data = sqlSession.read.parquet(s"$rootPath/$COUNTRIES_PATH")
     renameColumn(data)
   }
 
@@ -37,10 +37,10 @@ object CountriesDao {
 
   private var singleton: Option[CountriesDao] = None
 
-  def apply(_sqlSession: SparkSession): CountriesDao = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): CountriesDao = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new CountriesDao(_sqlSession))
+      case None => singleton = Some(new CountriesDao(_sqlSession, _rootPath))
     }
     singleton.get
   }

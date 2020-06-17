@@ -47,10 +47,10 @@ object HashtagsService {
 
   private var singleton: Option[HashtagsService] = None
 
-  def apply(_sqlSession: SparkSession): HashtagsService = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): HashtagsService = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new HashtagsService(HashtagsDao(_sqlSession)))
+      case None => singleton = Some(new HashtagsService(HashtagsDao(_sqlSession, _rootPath)))
     }
     singleton.get
   }

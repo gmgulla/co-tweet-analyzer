@@ -27,10 +27,10 @@ object CountriesService {
 
   private var singleton: Option[CountriesService] = None
 
-  def apply(_sqlSession: SparkSession): CountriesService = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): CountriesService = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new CountriesService(CountriesDao(_sqlSession)))
+      case None => singleton = Some(new CountriesService(CountriesDao(_sqlSession, _rootPath)))
     }
     singleton.get
   }

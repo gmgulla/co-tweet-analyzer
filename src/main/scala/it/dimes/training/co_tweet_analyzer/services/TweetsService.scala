@@ -25,7 +25,7 @@ class TweetsService private (_dao: TweetsDao) {
    */
 
   def calculateLangueges(): Map[String, Long] = {
-    val langColumnName =  "lang" //"tweetLang"
+    val langColumnName =  "tweetLang"
     val countColumnName = "count"
     val tweets = dao.readData()
     tweets.select(langColumnName)
@@ -68,7 +68,7 @@ class TweetsService private (_dao: TweetsDao) {
    */
 
   def calculateUserNames(): Map[String, Long] = {
-    val userColumnName = "screen_name"  //"userName"
+    val userColumnName = "userName"  //"userName"
     val countColumnName = "count"
     val tweets = dao.readData()
     tweets.select(userColumnName)
@@ -81,28 +81,6 @@ class TweetsService private (_dao: TweetsDao) {
       .toMap
   }
 
-  /*
-  def calculateUserNamesRDD(): scala.collection.Map[String, Int] = {
-    val userColumnName = "screen_name"  //"userName"
-    val countColumnName = "count"
-    val tweets = dao.readData()
-    tweets.select(userColumnName)
-      .rdd
-      .map(row => (row.toString(), 1))
-      .reduceByKey(_+_)
-      .collectAsMap()
-  }
-   */
-
-  /*
-  // Implemented only for testing
-  def getLanguages(): DataFrame = {
-    val sourceColumName = "tweetLang"
-    val tweets = dao.readData()
-    tweets.select(sourceColumName)
-  }
-   */
-
 }
 
 // -----------------------------------------------------------------------||
@@ -113,10 +91,10 @@ object TweetsService {
 
   private var singleton: Option[TweetsService] = None
 
-  def apply(_sqlSession: SparkSession): TweetsService = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): TweetsService = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new TweetsService(TweetsDao(_sqlSession)))
+      case None => singleton = Some(new TweetsService(TweetsDao(_sqlSession, _rootPath)))
     }
     singleton.get
   }

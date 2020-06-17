@@ -9,15 +9,17 @@ import scala.collection.mutable
 class HashtagsServiceTest {
 
   private var sqlSession: SparkSession = _
+  var rootPath: String = _
 
   @Before
    def setUp(): Unit = {
     sqlSession = Launcher.init("Hashtags Service Test", "local[*]")
+    rootPath = "/Users/gmg/Documents/data"
   }
 
   @Test
   def isCalculateHashtagsReturnedValueCorrect(): Unit = {
-    val hashtagsService = HashtagsService(sqlSession)
+    val hashtagsService = HashtagsService(sqlSession, rootPath)
     val data = hashtagsService.calculateHashtags()
     Assert.assertNotNull(data)
     data.foreach(println)

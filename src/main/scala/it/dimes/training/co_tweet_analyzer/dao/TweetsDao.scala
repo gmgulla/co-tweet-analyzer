@@ -3,7 +3,7 @@ package it.dimes.training.co_tweet_analyzer.dao
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.sql.types.{BooleanType, DateType, IntegerType, LongType, StringType, StructType}
 
-class TweetsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSession) {
+class TweetsDao private (_sqlSession: SparkSession, _rootPath: String) extends AbstractDao(_sqlSession, _rootPath) {
 
 // -----------------------------------------------------------------------||
 // FIELDS ----------------------------------------------------------------||
@@ -17,7 +17,7 @@ class TweetsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSess
 // -----------------------------------------------------------------------||
 
   override def readData(): Dataset[Row] = {
-    val data = sqlSession.read.parquet(s"$TWEETS_PATH")
+    val data = sqlSession.read.parquet(s"$rootPath/$TWEETS_PATH")
     renameColumn(data)
   }
 
@@ -58,10 +58,10 @@ object TweetsDao {
 
   private var singleton: Option[TweetsDao] = None
 
-  def apply(_sqlSession: SparkSession): TweetsDao = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): TweetsDao = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new TweetsDao(_sqlSession))
+      case None => singleton = Some(new TweetsDao(_sqlSession, _rootPath))
     }
     singleton.get
   }

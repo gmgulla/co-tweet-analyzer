@@ -3,7 +3,7 @@ package it.dimes.training.co_tweet_analyzer.dao
 import org.apache.spark.sql.{Dataset, Row, SparkSession}
 import org.apache.spark.sql.types.{StringType, StructType}
 
-class HashtagsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSession) {
+class HashtagsDao private (_sqlSession: SparkSession, _rootPath: String) extends AbstractDao(_sqlSession, _rootPath) {
 
 // -----------------------------------------------------------------------||
 // FIELDS ----------------------------------------------------------------||
@@ -16,7 +16,7 @@ class HashtagsDao private (_sqlSession: SparkSession) extends AbstractDao(_sqlSe
 // -----------------------------------------------------------------------||
 
   override def readData(): Dataset[Row] = {
-    val data = sqlSession.read.parquet(s"/Users/gmg/Documents/data/hashtags")
+    val data = sqlSession.read.parquet(s"$rootPath/$HASHTAGS_PATH")
     renameColumn(data)
   }
 
@@ -36,10 +36,10 @@ object HashtagsDao {
 
   private var singleton: Option[HashtagsDao] = None
 
-  def apply(_sqlSession: SparkSession): HashtagsDao = {
+  def apply(_sqlSession: SparkSession, _rootPath: String): HashtagsDao = {
     singleton match {
       case Some(_) =>
-      case None => singleton = Some(new HashtagsDao(_sqlSession))
+      case None => singleton = Some(new HashtagsDao(_sqlSession, _rootPath))
     }
     singleton.get
   }
