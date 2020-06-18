@@ -64,4 +64,4 @@ The screenshot below shows an example to select path correctly:
 
 ## Info
 
-This project was made by [Gian Marco Gullà](gullagianmarco@gmail.com).
+This project was made by [Gian Marco Gullà](mailto:gullagianmarco@gmail.com).
