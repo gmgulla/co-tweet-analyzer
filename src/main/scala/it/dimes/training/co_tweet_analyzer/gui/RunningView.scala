@@ -1,12 +1,19 @@
 package it.dimes.training.co_tweet_analyzer.gui
 
-import java.awt.{BorderLayout, FlowLayout}
+import java.awt.FlowLayout
 import java.awt.event.{WindowAdapter, WindowEvent}
 
 import javax.swing._
 
 
-
+/**
+ * Defines common base for ''waiting view'' which is visible during a query running.
+ *
+ * @param mainFrame [[MainView]] instance
+ * @param datasetPath dataset root directory path
+ *
+ * @author Gian Marco Gullà
+ */
 abstract class RunningView(
                    protected val mainFrame: JFrame,
                    protected val datasetPath: String
@@ -17,6 +24,13 @@ abstract class RunningView(
   private var panel: JPanel = _
   private var textLabel: JLabel = _
 
+//============================================================================================||
+// FIELDS and SETUP ==========================================================================||
+//============================================================================================||
+
+  /**
+   * Setups this view
+   */
   private def setUp(): Unit = {
     val text = s"Query is running.\nIt may take several minutes to get the result, depending on the complexity of the query and the computing power of your PC.\nPlease wait ..."
     textLabel = new JLabel(text)
@@ -38,11 +52,18 @@ abstract class RunningView(
     this.add(panel)
     this.addWindowListener(windowListener)
     this.setVisible(true)
-    JOptionPane.showMessageDialog(null, "Please wait...", "Query is running", JOptionPane.PLAIN_MESSAGE)
+    JOptionPane.showMessageDialog(null, "Please, click Ok and wait...", "Query is running", JOptionPane.PLAIN_MESSAGE)
 
   }
 
+  /**
+   * Executes query selected in `MainView`
+   */
   protected def executeQuery(): Unit
+
+//============================================================================================||
+// SCRIPT ====================================================================================||
+//============================================================================================||
 
   setUp()
   executeQuery()

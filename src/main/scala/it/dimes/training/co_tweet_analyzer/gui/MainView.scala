@@ -1,10 +1,15 @@
 package it.dimes.training.co_tweet_analyzer.gui
 
-import java.awt.{Font, GridLayout}
+import java.awt.GridLayout
 import java.awt.event.{ActionEvent, ActionListener}
 
-import javax.swing.{JButton, JFrame, JLabel, JPanel, JTextArea, JTextField, SwingConstants, WindowConstants}
+import javax.swing._
 
+/**
+ * Implements main window which allows to select a query to run.
+ *
+ * @param datasetPath dataset root directory path
+ */
 class MainView(private val datasetPath: String) extends JFrame {
 
 //============================================================================================||
@@ -38,6 +43,9 @@ class MainView(private val datasetPath: String) extends JFrame {
   private var userQueryLabel: JLabel = _
   private var userQueryButton: JButton = _
 
+  /**
+   * Setups this window
+   */
   private def setUp(): Unit = {
     val buttonsText = "Run"
     val buttonsListener = new ClickListener(this)
@@ -97,7 +105,7 @@ class MainView(private val datasetPath: String) extends JFrame {
 
     // User Query setup ------------------------------------------------------------------------
     // userQueryTextField
-    val userQueryTextFieldText = "Users Used Query"
+    val userQueryTextFieldText = "Users Query"
     userQueryLabel = new JLabel(userQueryTextFieldText)
 
     // userQueryButton
@@ -133,8 +141,20 @@ class MainView(private val datasetPath: String) extends JFrame {
 
   setUp()
 
+//============================================================================================||
+// LISTENER ==================================================================================||
+//============================================================================================||
+
+  /**
+   * Defines listeners for buttons in this window
+   *
+   * @param mainFrame this window
+   */
   private class ClickListener(private val mainFrame: JFrame) extends ActionListener {
 
+    /**
+     * Launches the view corresponding to query selected
+     */
     override def actionPerformed(e: ActionEvent): Unit = {
       val source = e.getSource
       source match {

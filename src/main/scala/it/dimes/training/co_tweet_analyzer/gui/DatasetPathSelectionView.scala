@@ -1,7 +1,14 @@
 package it.dimes.training.co_tweet_analyzer.gui
 
-import javax.swing.{JFileChooser, JOptionPane}
+import javax.swing.JFileChooser
 
+/**
+ * Implements opening UI to allow selecting dataset root directory hierarchy path.
+ *
+ * @param homeDirectoryPath path where open selection window
+ *
+ * @author Gian Marco Gullà
+ */
 class DatasetPathSelectionView (private val homeDirectoryPath: String)  {
 
 //============================================================================================||
@@ -13,6 +20,9 @@ class DatasetPathSelectionView (private val homeDirectoryPath: String)  {
   private var chooser: JFileChooser = _
 
 
+  /**
+   * Setups UI
+   */
   private def setUp(): Unit = {
 
     chooser = new JFileChooser(homeDirectoryPath)
@@ -28,6 +38,12 @@ class DatasetPathSelectionView (private val homeDirectoryPath: String)  {
 // METHODS ===================================================================================||
 //============================================================================================||
 
+  /**
+   * Launch windows to select dataset root directory hierarchy path
+   * and return it
+   *
+   * @return dataset root directory path
+   */
   def selectDatasetPath(): String = {
     val selectionState = chooser.showDialog(null, "OK")
     if (selectionState == JFileChooser.APPROVE_OPTION) {

@@ -7,6 +7,12 @@ import org.jfree.chart.ui.ApplicationFrame
 import org.jfree.chart.{ChartFactory, ChartPanel, JFreeChart}
 import org.jfree.data.general.DefaultPieDataset
 
+/**
+ * Implements view to visualize query result as a `PieChart`
+ * @param _title window title
+ * @param dataset dataset to show
+ * @param mainFrame reference to [[MainView]] instance
+ */
 class PieChartView(
                     _title: String,
                     private val dataset: Map[String, Long],
@@ -14,6 +20,9 @@ class PieChartView(
                   ) extends ApplicationFrame(_title) {
 
 
+  /**
+   * Creates [[dataset]] version useful to be shown as `PieChart`
+   */
   private def createPieDataset(): DefaultPieDataset = {
     val pieDataset = new DefaultPieDataset()
     val filteredDataset = dataset.filterKeys(_ != null)
@@ -23,6 +32,9 @@ class PieChartView(
     pieDataset
   }
 
+  /**
+   * Creates and setups the view
+   */
   private def createPieChart(pieDataset: DefaultPieDataset): JFreeChart = {
     val legend = !(dataset.size > 50)
     val tooltips = true
@@ -31,12 +43,18 @@ class PieChartView(
     pieChart
   }
 
+  /**
+   * Creates the [[JPanel]] for the window
+   */
   private def createPanel(): JPanel = {
     val pieDataset = createPieDataset()
     val pieChart = createPieChart(pieDataset)
     new ChartPanel(pieChart)
   }
 
+  /**
+   * Shows chart window to screen
+   */
   def showChart(): Unit = {
     this.setContentPane(createPanel())
     val width = 600
